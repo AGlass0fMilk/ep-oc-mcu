@@ -31,8 +31,8 @@
 using namespace ep;
 
 NCV7608::NCV7608(mbed::SPI& spi, PinName csb, PinName global_en) :
-        _spi(spi), _cs(nullptr), _global_en(nullptr), _cached_state(0), _cached_diag(
-                0) {
+        _spi(spi), _cs(nullptr), _global_en(nullptr), _cached_state(0),
+        _cached_diag(0), _delete_outputs(true) {
 
     // Instantiate optional control outputs
     if (csb != NC) {
@@ -45,7 +45,21 @@ NCV7608::NCV7608(mbed::SPI& spi, PinName csb, PinName global_en) :
     }
 }
 
+NCV7608::NCV7608(mbed::SPI& spi, mbed::DigitalOut* csb,
+        mbed::DigitalOut* global_en) :
+        _spi(spi), _cs(csb), _global_en(global_en),
+        _cached_state(0), _cached_diag(0), _delete_outputs(false)
+{
+
+}
+
 NCV7608::~NCV7608(void) {
+
+    // Only delete dynamically allocated members if we created them
+    if(!_delete_outputs) {
+        return;
+    }
+
     // Clean up any dynamically allocated members
     if (_cs != nullptr) {
         delete _cs;
@@ -60,9 +74,6 @@ void NCV7608::enable(void) {
     if (_global_en != nullptr) {
         *_global_en = 1;
     }
-
-    // Turn off all channels initially
-    batch_write(0);
 }
 
 void NCV7608::disable(void) {
@@ -222,4 +233,3 @@ void NCV7608::ChannelOut::disable_open_load_diag(void) {
 bool NCV7608::ChannelOut::open_load_diag_enabled(void) {
     return (_parent.get_cached_state() & (0x80 >> _num));
 }
-

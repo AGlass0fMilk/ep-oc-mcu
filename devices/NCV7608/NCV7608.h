@@ -29,6 +29,9 @@
 
 #include "platform/PlatformMutex.h"
 
+#define NCV7608_SPI_FORMAT_BITS 16
+#define NCV7608_SPI_FORMAT_MODE 1
+
 namespace ep {
 
 /**
@@ -202,7 +205,18 @@ public:
      * @note The SPI bus instance used must be configured for 16-bit format
      * to work properly!
      */
-    NCV7608(mbed::SPI& spi, PinName csb = NC, PinName global_en = NC);
+    NCV7608(mbed::SPI& spi, PinName csb, PinName global_en = NC);
+
+    /**
+     * Instantiate an NCV7608 driver
+     * @param[in] spi SPI bus instance to use for communication (16-bit format!)
+     * @param[in] csb Chip select "bar" output
+     * @param[in] global_en Global enable output, defaults to nullptr (unused)
+     *
+     * @note The SPI bus instance used must be configured for 16-bit format
+     * to work properly!
+     */
+    NCV7608(mbed::SPI& spi, mbed::DigitalOut* csb, mbed::DigitalOut* global_en = nullptr);
 
     /**
      * Destructor
@@ -297,6 +311,12 @@ protected:
     uint16_t _cached_diag;  /** Cached diagnostics bits */
 
     PlatformMutex _mutex;
+
+    /**
+     * Flag indicating if outputs (_cs and _global_en)
+     * were created internally and should be deleted in the destructor
+     */
+    bool _delete_outputs;
 
 };
 
