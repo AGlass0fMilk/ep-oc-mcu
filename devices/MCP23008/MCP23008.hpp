@@ -311,6 +311,8 @@ protected:
     mbed::I2C i2c;
     uint8_t i2c_address;
 
+    PlatformMutex mutex;
+
 };
 
 #endif /* EP_OC_MCU_DEVICES_MCP23008_H_*/

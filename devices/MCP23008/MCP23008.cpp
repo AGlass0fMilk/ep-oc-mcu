@@ -111,13 +111,14 @@ void MCP23008::acknowledge_interrupt ( uint8_t &pin, uint8_t &values ) {
 }
 
 uint8_t MCP23008::read_register ( uint8_t reg ) {
+    mutex.lock();
     char data[] = {reg};
     if ( 0 != i2c.write ( i2c_address, data, 1 ) )
         error ( "MCP23008::read_register: Missing ACK for write\n" );
 
     if ( 0 != i2c.read ( i2c_address, data, 1 ) )
         error ( "MCP23008:read_register: Missing ACK for read\n" );
-
+    mutex.unlock();
     return data[0];
 }
 
