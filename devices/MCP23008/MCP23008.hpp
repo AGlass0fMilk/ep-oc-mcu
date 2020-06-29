@@ -25,6 +25,13 @@
 #define EP_OC_MCU_DEVICES_MCP23008_H_
 
 #include "drivers/I2C.h"
+#include "drivers/DigitalOut.h"
+#include "drivers/DigitalIn.h"
+#include "drivers/DigitalInOut.h"
+
+#include "PlatformMutex.h"
+
+// TODO - as_interrupt_in API
 
 /** MCP23008 class
  *
@@ -51,6 +58,97 @@ public:
         Pin_GP7 = 0x80,
         Pin_All = 0xFF
     };
+
+protected:
+
+    /**
+     * Expanded IO class implements functionality common to
+     * ExpandedInput, ExpandedOutput, ExpandedInputOutput
+     *
+     * @note Accessing an ExpandedIO from multiple handles
+     * (ie: using it with both ExpandedInput and ExpandedOutput,
+     * or using the MCP23008 APIs directly) may cause unexpected
+     * behavior. The state of an ExpandedIO's direction
+     * is not maintained past initialization.
+     */
+    class ExpandedIO
+    {
+    public:
+
+        ExpandedIO(MCP23008& parent, Pin pin);
+
+    protected:
+
+        int read();
+        void mode(PinMode pull);
+        void write(int value);
+        void output();
+        void input();
+
+    protected:
+
+        MCP23008& _parent;
+        Pin _pin;
+
+    };
+
+public:
+
+    /**
+     * ExpandedInput class that implements the mbed::DigitalIn API
+     *
+     * @note See mbed::DigitalIn class declaration for API documentation
+     */
+    class ExpandedInput : public ExpandedIO, public mbed::DigitalIn
+    {
+
+    public:
+        ExpandedInput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalIn(NC) { }
+        int read() { return ExpandedIO::read(); }
+        void mode(PinMode pull) { ExpandedIO::mode(pull); }
+        int is_connected() { return 1; }
+    };
+
+    /**
+     * ExpandedOutput class that implements the mbed::DigitalOut API
+     *
+     * @note See mbed::DigitalOut class declaration for API documentation
+     */
+    class ExpandedOutput : public ExpandedIO, public mbed::DigitalOut
+    {
+
+    public:
+        ExpandedOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalOut(NC) { }
+        void write(int value) { ExpandedIO::write(value); }
+        int read() { return ExpandedIO::read(); }
+        int is_connected() { return 1; }
+    };
+
+    /**
+     * ExpandedInputOutput class that implements the mbed::DigitalInOut API
+     *
+     * @note See mbed::DigitalInOut class declaration for API documentation
+     */
+    class ExpandedInputOutput : public ExpandedIO, public mbed::DigitalInOut
+    {
+
+    public:
+        ExpandedInputOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalInOut(NC) { }
+        void write(int value) { ExpandedIO::write(value); }
+        int read() { return ExpandedIO::read(); }
+        void output() { ExpandedIO::output(); }
+        void input() { ExpandedIO::input(); }
+        void mode(PinMode pull) { ExpandedIO::mode(pull); }
+        int is_connected() { return 1; }
+    };
+
+public:
+
+    /** Allow ExpandedInput/Output/InputOutput to access internal members*/
+    friend class ChannelInput;
+    friend class ChannelOutput;
+    friend class ChannelInputOutput;
+
     /** Constructor
      *
      * @param sda I2C sda pin
@@ -60,6 +158,31 @@ public:
      * @param freq The I2C frequency. Should probably be 100KHz or 400KHz.
      */
     MCP23008 ( PinName sda, PinName scl, uint8_t address, Frequency freq = Frequency_100KHz );
+
+    /**
+     * Convenience function to create a DigitalIn object for a given pin
+     * @param[in] pin Pin to instantiate as DigitalIn
+     * @retval out DigitalIn-like object
+     *
+     * @note you can cast a pointer to the returned object to a DigitalIn*
+     * to pass it to APIs that require a DigitalIn* object
+     */
+    ExpandedInput as_input(Pin pin);
+
+    /**
+     * Convenience function to create a DigitalOut object for a given pin
+     * @param[in] pin Pin to instantiate as DigitalOut
+     * @retval out DigitalOut-like object
+     */
+    ExpandedOutput as_output(Pin pin);
+
+    /**
+     * Convenience function to create a DigitalInOut object for a given pin
+     * @param[in] pin Pin to instantiate as DigitalInOut
+     * @retval inout DigitalInOut-like object
+     */
+    ExpandedInputOutput as_input_output(Pin pin);
+
 
     /** Set pins to input mode
      *

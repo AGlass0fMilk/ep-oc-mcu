@@ -143,3 +143,35 @@ void MCP23008::reset ( ) {
     for ( uint8_t reg = IPOL; reg <= OLAT; reg++ )
         write_register ( reg, 0 );
 }
+
+MCP23008::ExpandedIO::ExpandedIO(MCP23008& parent, Pin pin) : _parent(parent),
+        _pin(pin) {
+}
+
+int MCP23008::ExpandedIO::read() {
+    return 1;
+}
+
+void MCP23008::ExpandedIO::mode(PinMode pull) {
+}
+
+void MCP23008::ExpandedIO::write(int value) {
+}
+
+void MCP23008::ExpandedIO::output() {
+}
+
+void MCP23008::ExpandedIO::input() {
+}
+
+MCP23008::ExpandedInput MCP23008::as_input(Pin pin) {
+    return ExpandedInput(*this, pin);
+}
+
+MCP23008::ExpandedOutput MCP23008::as_output(Pin pin) {
+    return ExpandedOutput(*this, pin);
+}
+
+MCP23008::ExpandedInputOutput MCP23008::as_input_output(Pin pin) {
+    return ExpandedInputOutput(*this, pin);
+}
