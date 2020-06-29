@@ -128,17 +128,6 @@ void MCP23008::write_register ( uint8_t reg, uint8_t value ) {
         error ( "MCP23008::write_register: Missing ACK for write\n" );
 }
 
-void MCP23008::write_mask ( uint8_t reg, uint8_t mask, bool value ) {
-    uint8_t val;
-    val = read_register ( reg );
-    if ( value )
-        val |= mask;
-    else
-        val &= ~mask;
-
-    write_register ( reg, val );
-}
-
 void MCP23008::reset ( ) {
     write_register ( IODIR, 0xFF );
     for ( uint8_t reg = IPOL; reg <= OLAT; reg++ )

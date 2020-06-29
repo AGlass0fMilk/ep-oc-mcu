@@ -304,7 +304,6 @@ protected:
 
     uint8_t read_register ( uint8_t reg );
     void write_register ( uint8_t reg, uint8_t value );
-    void write_mask ( uint8_t reg, uint8_t mask, bool value );
 
     void reset ();
 
