@@ -103,7 +103,7 @@ public:
     {
 
     public:
-        ExpandedInput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalIn(NC) { }
+        ExpandedInput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalIn(NC) { input(); }
         int read() { return ExpandedIO::read(); }
         void mode(PinMode pull) { ExpandedIO::mode(pull); }
         int is_connected() { return 1; }
@@ -118,7 +118,7 @@ public:
     {
 
     public:
-        ExpandedOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalOut(NC) { }
+        ExpandedOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalOut(NC) { output(); }
         void write(int value) { ExpandedIO::write(value); }
         int read() { return ExpandedIO::read(); }
         int is_connected() { return 1; }
@@ -133,7 +133,7 @@ public:
     {
 
     public:
-        ExpandedInputOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalInOut(NC) { }
+        ExpandedInputOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalInOut(NC) { output(); }
         void write(int value) { ExpandedIO::write(value); }
         int read() { return ExpandedIO::read(); }
         void output() { ExpandedIO::output(); }

@@ -24,6 +24,7 @@
 #include "MCP23008.hpp"
 
 #include "mbed_error.h"
+#include "mbed_assert.h"
 
 namespace {
 const uint8_t MCP23008_ADDRESS  = 0x40;
@@ -139,19 +140,42 @@ MCP23008::ExpandedIO::ExpandedIO(MCP23008& parent, Pin pin) : _parent(parent),
 }
 
 int MCP23008::ExpandedIO::read() {
-    return 1;
+    return (_parent.read_inputs() & _pin);
 }
 
 void MCP23008::ExpandedIO::mode(PinMode pull) {
+
+    // PullDown is not supported by the MCP23008
+    MBED_ASSERT(pull != PullDown);
+
+    _parent.mutex.lock();
+    uint8_t pullups = _parent.get_pullups();
+
+    if(pull == PullNone) {
+        pullups &= ~_pin;
+    } else if(pull == PullUp) {
+        pullups |= _pin;
+    }
+
+    _parent.set_pullups(pullups);
+    _parent.mutex.unlock();
 }
 
 void MCP23008::ExpandedIO::write(int value) {
+    uint8_t outputs = _parent.read_outputs();
+    if(value) {
+        _parent.write_outputs((outputs | _pin));
+    } else {
+        _parent.write_outputs((outputs & (~_pin)));
+    }
 }
 
 void MCP23008::ExpandedIO::output() {
+    _parent.set_output_pins(_pin);
 }
 
 void MCP23008::ExpandedIO::input() {
+    _parent.set_input_pins(_pin);
 }
 
 MCP23008::ExpandedInput MCP23008::as_input(Pin pin) {
