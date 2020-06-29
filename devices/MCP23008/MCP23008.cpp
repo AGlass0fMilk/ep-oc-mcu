@@ -44,7 +44,7 @@ const uint8_t OLAT              = 0x0A;
 
 MCP23008::MCP23008 ( PinName sda, PinName scl, uint8_t address, Frequency freq )
         : i2c ( sda, scl ),
-        i2c_address ( MCP23008_ADDRESS | address ) {
+        i2c_address ( MCP23008_ADDRESS | (address << 1) ) {
     if ( address > 7 )
         error ( "MCP23008::MCP23008: address is out of range, must be <= 7\n" );
 
