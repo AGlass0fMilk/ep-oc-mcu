@@ -1,0 +1,14 @@
+{
+    "name": "ncv7608",
+    "config": {
+        "use-8bit-spi": {
+            "help": "The driver will attempt to use 8-bit SPI format instead of 16-bit format. Set this to true if the target does not support 16-bit SPI format",
+            "value": false
+        }
+    },
+    "target_overrides": {
+        "MCU_NRF52840": {
+            "use-8bit-spi": true
+        }   
+    }
+}

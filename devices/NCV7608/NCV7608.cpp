@@ -106,8 +106,21 @@ uint16_t NCV7608::batch_write(uint16_t new_state) {
     assert_cs();
 
     _cached_state = new_state;
-    _cached_diag = _spi.write(_cached_state);
 
+#if MBED_CONF_NCV7608_USE_8BIT_SPI
+    // Shuffle the bytes around
+    uint8_t temp_tx[2] = { 0 }, temp_rx[2] = { 0 };
+    temp_tx[1] = (uint8_t)(_cached_state & 0x00FF);
+    temp_tx[0] = (uint8_t)((_cached_state & 0xFF00) >> 8);
+    _spi.write((char*)temp_tx, 2, (char*)temp_rx, 2);
+
+    // Shuffle the received bytes back
+    _cached_diag = temp_rx[1];
+    _cached_diag |= (temp_rx[0] << 8);
+
+#else
+    _cached_diag = _spi.write(_cached_state);
+#endif
     deassert_cs();
 
     // Unlock the SPI mutex

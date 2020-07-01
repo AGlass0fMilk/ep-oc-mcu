@@ -32,6 +32,17 @@
 #define NCV7608_SPI_FORMAT_BITS 16
 #define NCV7608_SPI_FORMAT_MODE 1
 
+/**
+ * Set this to true to have the driver
+ * attempt to use 8-bit SPI format.
+ *
+ * This is required if a target's hardware does
+ * not support 16-bit format.
+ */
+#ifndef MBED_CONF_NCV7608_USE_8BIT_SPI
+#define MBED_CONF_NCV7608_USE_8BIT_SPI 0
+#endif
+
 namespace ep {
 
 /**
