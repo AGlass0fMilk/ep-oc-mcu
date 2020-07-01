@@ -79,11 +79,11 @@ protected:
 
     protected:
 
-        int read();
-        void mode(PinMode pull);
-        void write(int value);
-        void output();
-        void input();
+        int internal_read();
+        void internal_mode(PinMode pull);
+        void internal_write(int value);
+        void internal_output();
+        void internal_input();
 
     protected:
 
@@ -103,10 +103,11 @@ public:
     {
 
     public:
-        ExpandedInput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalIn(NC) { input(); }
-        int read() { return ExpandedIO::read(); }
-        void mode(PinMode pull) { ExpandedIO::mode(pull); }
-        int is_connected() { return 1; }
+        ExpandedInput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalIn(NC) { internal_input(); }
+        virtual ~ExpandedInput() { }
+        virtual int read() { return ExpandedIO::internal_read(); }
+        virtual void mode(PinMode pull) { ExpandedIO::internal_mode(pull); }
+        virtual int is_connected() { return 1; }
     };
 
     /**
@@ -118,10 +119,11 @@ public:
     {
 
     public:
-        ExpandedOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalOut(NC) { output(); }
-        void write(int value) { ExpandedIO::write(value); }
-        int read() { return ExpandedIO::read(); }
-        int is_connected() { return 1; }
+        ExpandedOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalOut(NC) { internal_output(); }
+        virtual ~ExpandedOutput() { }
+        virtual void write(int value) { ExpandedIO::internal_write(value); }
+        virtual int read() { return ExpandedIO::internal_read(); }
+        virtual int is_connected() { return 1; }
     };
 
     /**
@@ -134,12 +136,13 @@ public:
 
     public:
         ExpandedInputOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalInOut(NC) { output(); }
-        void write(int value) { ExpandedIO::write(value); }
-        int read() { return ExpandedIO::read(); }
-        void output() { ExpandedIO::output(); }
-        void input() { ExpandedIO::input(); }
-        void mode(PinMode pull) { ExpandedIO::mode(pull); }
-        int is_connected() { return 1; }
+        virtual ~ExpandedInputOutput() { }
+        virtual void write(int value) { ExpandedIO::internal_write(value); }
+        virtual int read() { return ExpandedIO::internal_read(); }
+        virtual void output() { ExpandedIO::internal_output(); }
+        virtual void input() { ExpandedIO::internal_input(); }
+        virtual void mode(PinMode pull) { ExpandedIO::internal_mode(pull); }
+        virtual int is_connected() { return 1; }
     };
 
 public:

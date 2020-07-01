@@ -139,11 +139,11 @@ MCP23008::ExpandedIO::ExpandedIO(MCP23008& parent, Pin pin) : _parent(parent),
         _pin(pin) {
 }
 
-int MCP23008::ExpandedIO::read() {
+int MCP23008::ExpandedIO::internal_read() {
     return (_parent.read_inputs() & _pin);
 }
 
-void MCP23008::ExpandedIO::mode(PinMode pull) {
+void MCP23008::ExpandedIO::internal_mode(PinMode pull) {
 
     // PullDown is not supported by the MCP23008
     MBED_ASSERT(pull != PullDown);
@@ -161,7 +161,7 @@ void MCP23008::ExpandedIO::mode(PinMode pull) {
     _parent.mutex.unlock();
 }
 
-void MCP23008::ExpandedIO::write(int value) {
+void MCP23008::ExpandedIO::internal_write(int value) {
     uint8_t outputs = _parent.read_outputs();
     if(value) {
         _parent.write_outputs((outputs | _pin));
@@ -170,11 +170,11 @@ void MCP23008::ExpandedIO::write(int value) {
     }
 }
 
-void MCP23008::ExpandedIO::output() {
+void MCP23008::ExpandedIO::internal_output() {
     _parent.set_output_pins(_pin);
 }
 
-void MCP23008::ExpandedIO::input() {
+void MCP23008::ExpandedIO::internal_input() {
     _parent.set_input_pins(_pin);
 }
 
