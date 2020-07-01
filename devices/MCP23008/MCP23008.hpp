@@ -104,10 +104,10 @@ public:
 
     public:
         ExpandedInput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalIn(NC) { internal_input(); }
-        virtual ~ExpandedInput() { }
-        virtual int read() { return ExpandedIO::internal_read(); }
-        virtual void mode(PinMode pull) { ExpandedIO::internal_mode(pull); }
-        virtual int is_connected() { return 1; }
+        virtual ~ExpandedInput() override { }
+        virtual int read() override { return ExpandedIO::internal_read(); }
+        virtual void mode(PinMode pull) override { ExpandedIO::internal_mode(pull); }
+        virtual int is_connected() override { return 1; }
     };
 
     /**
@@ -120,10 +120,10 @@ public:
 
     public:
         ExpandedOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalOut(NC) { internal_output(); }
-        virtual ~ExpandedOutput() { }
-        virtual void write(int value) { ExpandedIO::internal_write(value); }
-        virtual int read() { return ExpandedIO::internal_read(); }
-        virtual int is_connected() { return 1; }
+        virtual ~ExpandedOutput() override { }
+        virtual void write(int value) override { ExpandedIO::internal_write(value); }
+        virtual int read() override { return ExpandedIO::internal_read(); }
+        virtual int is_connected() override { return 1; }
     };
 
     /**
@@ -136,13 +136,13 @@ public:
 
     public:
         ExpandedInputOutput(MCP23008& parent, Pin pin) : ExpandedIO(parent, pin), mbed::DigitalInOut(NC) { output(); }
-        virtual ~ExpandedInputOutput() { }
-        virtual void write(int value) { ExpandedIO::internal_write(value); }
-        virtual int read() { return ExpandedIO::internal_read(); }
-        virtual void output() { ExpandedIO::internal_output(); }
-        virtual void input() { ExpandedIO::internal_input(); }
-        virtual void mode(PinMode pull) { ExpandedIO::internal_mode(pull); }
-        virtual int is_connected() { return 1; }
+        virtual ~ExpandedInputOutput() override { }
+        virtual void write(int value) override { ExpandedIO::internal_write(value); }
+        virtual int read() override { return ExpandedIO::internal_read(); }
+        virtual void output() override { ExpandedIO::internal_output(); }
+        virtual void input() override { ExpandedIO::internal_input(); }
+        virtual void mode(PinMode pull) override { ExpandedIO::internal_mode(pull); }
+        virtual int is_connected() override { return 1; }
     };
 
 public:
